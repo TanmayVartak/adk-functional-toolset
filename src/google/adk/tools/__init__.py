@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING
 # The TYPE_CHECKING block is needed for autocomplete to work.
 if TYPE_CHECKING:
   from ..auth.auth_tool import AuthToolArguments
+  from .functional.functional_toolset import FunctionalToolset
   from .agent_tool import AgentTool
   from .api_registry import ApiRegistry
   from .apihub_tool.apihub_toolset import APIHubToolset
@@ -91,6 +92,10 @@ _LAZY_MAPPING = {
     'MCPToolset': ('.mcp_tool.mcp_toolset', 'MCPToolset'),
     'McpToolset': ('.mcp_tool.mcp_toolset', 'McpToolset'),
     'ApiRegistry': ('.api_registry', 'ApiRegistry'),
+    'FunctionalToolset': (
+        '.functional.functional_toolset',
+        'FunctionalToolset',
+    ),
 }
 
 __all__ = list(_LAZY_MAPPING.keys())

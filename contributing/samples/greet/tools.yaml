@@ -1,0 +1,26 @@
+sources:
+  - kind: source
+    name: greet_service
+
+tools:
+  - kind: tool
+    name: greet_user
+    source: greet_service
+    mapped_tool: greet
+    description: Greet a user by name in a chosen language
+    inputs:
+      user_name:
+        type: string
+        description: The name of the user to greet
+        required: true
+      language:
+        type: string
+        description: "Language for the greeting (english, spanish, french, german, japanese)"
+        required: false
+        default: english
+
+toolsets:
+  - kind: toolset
+    name: greet_toolset
+    tools:
+      - greet_user
