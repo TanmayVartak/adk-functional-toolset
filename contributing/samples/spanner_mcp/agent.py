@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Required environment variables:
+#   SPANNER_PROJECT   — GCP project ID
+#   SPANNER_INSTANCE  — Spanner instance ID
+#   SPANNER_DATABASE  — Spanner database ID
+
 import os
 
 import google.auth
@@ -45,10 +50,14 @@ tools = FunctionalToolset(
 root_agent = LlmAgent(
     model='gemini-2.5-flash',
     name='order_management_agent',
-    description='Agent to manage and look up customer orders using Spanner.',
+    description='Agent to look up users and orders using Spanner.',
     instruction="""\
-        You are an order management assistant. Use the available tools to look
-        up users, list orders, and update order statuses as requested.
+        You are an order management assistant with read-only access to Spanner.
+
+        Before running any query you MUST call create_session to obtain a session
+        name. Pass that session name to every subsequent query tool call.
+
+        Use the available tools to look up users and list orders by status.
     """,
     tools=[tools],
 )

@@ -4,11 +4,25 @@ sources:
 
 tools:
   - kind: tool
+    name: create_session
+    source: prod_spanner
+    mapped_tool: create_session
+    description: >
+      Create a Spanner session for the configured database. Must be called once
+      before running any queries. Returns a session name to pass to query tools.
+    inputs:
+      database: "projects/${SPANNER_PROJECT}/instances/${SPANNER_INSTANCE}/databases/${SPANNER_DATABASE}"
+
+  - kind: tool
     name: get_user_by_id
     source: prod_spanner
     mapped_tool: execute_sql_readonly
     description: Retrieve a user record by their unique ID
     inputs:
+      session:
+        type: string
+        description: Session name returned by create_session
+        required: true
       sql: SELECT UserId, Name, Email FROM Users WHERE UserId = @user_id
       parameters:
         - name: user_id
@@ -23,6 +37,10 @@ tools:
     mapped_tool: execute_sql_readonly
     description: List recent orders for a customer filtered by status
     inputs:
+      session:
+        type: string
+        description: Session name returned by create_session
+        required: true
       sql: >
         SELECT OrderId, Status, TotalAmount, CreatedAt
         FROM Orders
@@ -47,29 +65,10 @@ tools:
           default: 10
           mapped_value: {name: "limit", type: {code: INT64}, value: "${limit}"}
 
-  - kind: tool
-    name: update_order_status
-    source: prod_spanner
-    mapped_tool: execute_sql
-    description: Update the status of an existing order
-    inputs:
-      sql: "UPDATE Orders SET Status = @new_status WHERE OrderId = @order_id"
-      parameters:
-        - name: order_id
-          type: string
-          description: The order ID to update
-          required: true
-          mapped_value: {name: "order_id", type: {code: STRING}, value: "${order_id}"}
-        - name: new_status
-          type: string
-          description: "New status (CONFIRMED, SHIPPED, DELIVERED, CANCELLED)"
-          required: true
-          mapped_value: {name: "new_status", type: {code: STRING}, value: "${new_status}"}
-
 toolsets:
   - kind: toolset
     name: order_management
     tools:
+      - create_session
       - get_user_by_id
       - list_orders_by_status
-      - update_order_status
